@@ -12,13 +12,15 @@ Mostly copy-paste from https://github.com/domschl/torch-poet
 import os
 import random
 import numpy as np
-from urllib.request import urlopen 
+from urllib.request import urlopen
 
-class TextLibrary:
+from .gutenberg import *
+
+class TextLibrary(object):
     def __init__(self, descriptors, text_data_cache_directory=None, max=100000000):
         self.descriptors = descriptors
         self.data = ''
-        self.cache_dir=text_data_cache_directory
+        self.cache_dir = text_data_cache_directory
         self.files = []
         self.c2i = {}
         self.i2c = {}
@@ -26,26 +28,26 @@ class TextLibrary:
         dat = None
         for descriptor, author, title in descriptors:
             fd = {}
-            cache_name = self.get_cache_name(self.cache_dir, author, title)
+            cache_name = get_cache_name(self.cache_dir, author, title)
             if os.path.exists(cache_name):
-                is_cached=True
+                is_cached = True
             else:
-                is_cached=False
-            valid=False
+                is_cached = False
+            valid = False
             if descriptor[:4] == 'http' and is_cached is False:
                 try:
                     print(f"Downloading {cache_name}")
                     dat = urlopen(descriptor).read().decode('utf-8')
-                    if dat[0]=='\ufeff':  # Ignore BOM
-                        dat=dat[1:]
-                    dat = dat.replace('\r', '')  # get rid of pesky LFs 
+                    if dat[0] == '\ufeff':  # Ignore BOM
+                        dat = dat[1:]
+                    dat = dat.replace('\r', '')  # get rid of pesky LFs
                     self.data += dat
                     fd["title"] = title
                     fd["author"] = author
                     fd["data"] = dat
                     fd["index"] = index
                     index += 1
-                    valid=True
+                    valid = True
                     self.files.append(fd)
                 except Exception as e:
                     print(f"Can't download {descriptor}: {e}")
@@ -56,7 +58,7 @@ class TextLibrary:
                     if is_cached is True:
                         print(f"Reading {cache_name} from cache")
                         f = open(cache_name)
-                    else:    
+                    else:
                         f = open(descriptor)
                     dat = f.read(max)
                     self.data += dat
@@ -65,7 +67,7 @@ class TextLibrary:
                     index += 1
                     self.files.append(fd)
                     f.close()
-                    valid=True
+                    valid = True
                 except Exception as e:
                     print(f"ERROR: Cannot read: {cache_name}: {e}")
             if valid is True and is_cached is False and self.cache_dir is not None:
@@ -76,8 +78,7 @@ class TextLibrary:
                     f.close()
                 except Exception as e:
                     print(f"ERROR: failed to save cache {cache_name}: {e}")
-                
-                
+
         ind = 0
         for c in self.data:  # sets are not deterministic
             if c not in self.c2i:
@@ -85,26 +86,18 @@ class TextLibrary:
                 self.i2c[ind] = c
                 ind += 1
         self.ptr = 0
-        
-    def get_cache_name(self, cache_path, author, title):
-        if cache_path is None:
-            return None
-        cname=f"{author} - {title}.txt"
-        cname=cname.replace('?','_')  # Gutenberg index is pre-Unicode-mess and some titles contain '?' for bad conversions.
-        cache_filepath=os.path.join(cache_path, cname)
-        return cache_filepath
 
     def display_colored_html(self, textlist, dark_mode=False, display_ref_anchor=True, pre='', post=''):
         bgcolorsWht = ['#d4e6e1', '#d8daef', '#ebdef0', '#eadbd8', '#e2d7d5', '#edebd0',
-                    '#ecf3cf', '#d4efdf', '#d0ece7', '#d6eaf8', '#d4e6f1', '#d6dbdf',
-                    '#f6ddcc', '#fae5d3', '#fdebd0', '#e5e8e8', '#eaeded', '#A9CCE3']
-        bgcolorsDrk = ['#342621','#483a2f', '#3b4e20', '#2a3b48', '#324745', '#3d3b30',
-                    '#3c235f', '#443f4f', '#403c37', '#463a28', '#443621', '#364b5f',
-                    '#264d4c', '#2a3553', '#3d2b40', '#354838', '#3a3d4d', '#594C23']
+                       '#ecf3cf', '#d4efdf', '#d0ece7', '#d6eaf8', '#d4e6f1', '#d6dbdf',
+                       '#f6ddcc', '#fae5d3', '#fdebd0', '#e5e8e8', '#eaeded', '#A9CCE3']
+        bgcolorsDrk = ['#342621', '#483a2f', '#3b4e20', '#2a3b48', '#324745', '#3d3b30',
+                       '#3c235f', '#443f4f', '#403c37', '#463a28', '#443621', '#364b5f',
+                       '#264d4c', '#2a3553', '#3d2b40', '#354838', '#3a3d4d', '#594C23']
         if dark_mode is False:
-            bgcolors=bgcolorsWht
+            bgcolors = bgcolorsWht
         else:
-            bgcolors=bgcolorsDrk
+            bgcolors = bgcolorsDrk
         out = ''
         for txt, ind in textlist:
             txt = txt.replace('\n', '<br>')
@@ -112,11 +105,11 @@ class TextLibrary:
                 out += txt
             else:
                 if display_ref_anchor is True:
-                    anchor="<sup>[" + str(ind) + "]</sup>"
+                    anchor = "<sup>[" + str(ind) + "]</sup>"
                 else:
-                    anchor=""
+                    anchor = ""
                 out += "<span style=\"background-color:"+bgcolors[ind % 16]+";\">" + \
-                       txt + "</span>"+ anchor
+                       txt + "</span>" + anchor
         # display(HTML(pre+out+post))
 
     def source_highlight(self, txt, minQuoteSize=10, dark_mode=False, display_ref_anchor=True):
@@ -160,10 +153,11 @@ class TextLibrary:
         if len(noquote) > 0:
             out.append((noquote, 0))
             noquote = ''
-        self.display_colored_html(out, dark_mode=dark_mode, display_ref_anchor=display_ref_anchor)
+        self.display_colored_html(
+            out, dark_mode=dark_mode, display_ref_anchor=display_ref_anchor)
         if len(qts) > 0:  # print references, if there is at least one source
             self.display_colored_html(txsrc, dark_mode=dark_mode, display_ref_anchor=display_ref_anchor, pre="<small><p style=\"text-align:right;\">",
-                                     post="</p></small>")
+                                      post="</p></small>")
 
     def get_slice(self, length):
         if (self.ptr + length >= len(self.data)):
@@ -181,7 +175,7 @@ class TextLibrary:
 
     def encode(self, s):
         return [self.c2i[c] for c in s]
-        
+
     def get_random_slice(self, length):
         p = random.randrange(0, len(self.data)-length)
         sl = self.data[p:p+length]
@@ -195,7 +189,7 @@ class TextLibrary:
         s, rst = self.get_slice(length)
         X = [self.c2i[c] for c in s]
         return X
-        
+
     def get_encoded_slice_array(self, length):
         return np.array(self.get_encoded_slice(length))
 
@@ -229,14 +223,17 @@ class TextLibrary:
             smpX.append(Xi)
             smpy.append(yi)
         return np.array(smpX), np.array(smpy)
-    
+
     def one_hot(self, p, dim):
-        o=np.zeros(p.shape+(dim,), dtype=int)
+        o = np.zeros(p.shape+(dim,), dtype=int)
         for y in range(p.shape[0]):
             for x in range(p.shape[1]):
-                o[y,x,p[y,x]]=1
+                o[y, x, p[y, x]] = 1
         return o
-    
+
     def get_random_onehot_sample_batch(self, batch_size, length):
         X, y = self.get_random_sample_batch(batch_size, length)
-        return self.one_hot(X,len(self.i2c)), y
+        return self.one_hot(X, len(self.i2c)), y
+
+def build(args):
+    return None
