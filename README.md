@@ -1,1 +1,5 @@
-# lstm-gru-poem
+# Poem Generator
+
+# Dependencies
+
+# Run
