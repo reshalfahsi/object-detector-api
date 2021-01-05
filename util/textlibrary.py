@@ -23,9 +23,10 @@ class TextLibrary:
         self.c2i = {}
         self.i2c = {}
         index = 1
+        dat = None
         for descriptor, author, title in descriptors:
             fd = {}
-            cache_name=get_cache_name(self.cache_dir, author, title)
+            cache_name = self.get_cache_name(self.cache_dir, author, title)
             if os.path.exists(cache_name):
                 is_cached=True
             else:
@@ -37,7 +38,7 @@ class TextLibrary:
                     dat = urlopen(descriptor).read().decode('utf-8')
                     if dat[0]=='\ufeff':  # Ignore BOM
                         dat=dat[1:]
-                    dat=dat.replace('\r', '')  # get rid of pesky LFs 
+                    dat = dat.replace('\r', '')  # get rid of pesky LFs 
                     self.data += dat
                     fd["title"] = title
                     fd["author"] = author
@@ -66,7 +67,7 @@ class TextLibrary:
                     f.close()
                     valid=True
                 except Exception as e:
-                    print(f"ERROR: Cannot read: {filename}: {e}")
+                    print(f"ERROR: Cannot read: {cache_name}: {e}")
             if valid is True and is_cached is False and self.cache_dir is not None:
                 try:
                     print(f"Caching {cache_name}")
@@ -85,6 +86,14 @@ class TextLibrary:
                 ind += 1
         self.ptr = 0
         
+    def get_cache_name(self, cache_path, author, title):
+        if cache_path is None:
+            return None
+        cname=f"{author} - {title}.txt"
+        cname=cname.replace('?','_')  # Gutenberg index is pre-Unicode-mess and some titles contain '?' for bad conversions.
+        cache_filepath=os.path.join(cache_path, cname)
+        return cache_filepath
+
     def display_colored_html(self, textlist, dark_mode=False, display_ref_anchor=True, pre='', post=''):
         bgcolorsWht = ['#d4e6e1', '#d8daef', '#ebdef0', '#eadbd8', '#e2d7d5', '#edebd0',
                     '#ecf3cf', '#d4efdf', '#d0ece7', '#d6eaf8', '#d4e6f1', '#d6dbdf',
@@ -205,6 +214,7 @@ class TextLibrary:
     def get_sample_batch(self, batch_size, length):
         smpX = []
         smpy = []
+        rst = None
         for i in range(batch_size):
             Xi, yi, rst = self.get_sample(length)
             smpX.append(Xi)

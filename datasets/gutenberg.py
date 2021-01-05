@@ -1,5 +1,5 @@
 """
-Gutenberg Library dataset
+Gutenberg Library dataset.
 
 Search, filter, clean and download books from Project Gutenberg.
 

@@ -1,5 +1,5 @@
 """
-TextLibrary Dataset
+TextLibrary Dataset handler.
 
 Mostly copy-paste from https://github.com/domschl/torch-poet
 """
