@@ -17,11 +17,15 @@ class TextLibraryDataset(torch.utils.data.Dataset):
         self.sample_length = sample_length
         self.length = int((len(self.textlib.data)-sample_length-1)/text_quanta)
         # self.gpu_data=torch.cuda.LongTensor(textlib.encode(textlib.data[:-1]))
-        self.data = torch.LongTensor(
-            textlib.encode(textlib.data)).to(self.device)
+        self.__encoding = (textlib.c2i, textlib.i2c)
+        self.data = textlib.encode(textlib.data)
+        self.data = torch.LongTensor(self.data).to(self.device)
 
     def __len__(self):
         return self.length
+    
+    def get_encoding(self):
+        return self.__encoding
 
     def __getitem__(self, idx):
         if torch.is_tensor(idx):

@@ -9,8 +9,6 @@ import math
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-from torch.utils.data import DataLoader
 from torch.nn import TransformerEncoder, TransformerEncoderLayer
 
 from . import train
@@ -78,6 +76,8 @@ class PoemGenerator(nn.Module):
         self.__network_parameters['embedding_size'] = embedding_size
         self.__network_parameters['input_size'] = input_size
 
+        self.__network_parameters['c2i_encoding'] = {}
+
         self.pos_encoder = PositionalEncoding(embedding_size)
         encoder_layers = TransformerEncoderLayer(
             embedding_size, nheads, hidden_dim)
@@ -130,6 +130,8 @@ class PoemGenerator(nn.Module):
         
         train_dataset = dataset
         test_dataset = dataset
+        
+        self.__network_parameters['c2i_encoding'], self.__network_parameters['i2c_encoding'] = dataset.get_encoding()
 
         self.__network_parameters['train_dataset'] = train_dataset
         self.__network_parameters['train_loader'] = torch.utils.data.DataLoader(
@@ -149,10 +151,10 @@ class PoemGenerator(nn.Module):
 
         return train.process(self, path)
 
-    def predict(self, weight_path='', path=''):
+    def predict(self, weight_path='', text=''):
 
-        if path == '' and weight_path == '':
+        if text == '' and weight_path == '':
             print("Please Insert Path!")
             return None
 
-        return predict.predict(self, weight_path, path)
+        return predict.predict(self, weight_path, text)

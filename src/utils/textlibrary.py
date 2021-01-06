@@ -3,8 +3,6 @@ TextLibrary class.
 
 Text library for training, encoding, batch generation, and formatted source display. 
 It read some books from Project Gutenberg and supports creation of training batches. 
-The output functions support highlighting to allow to compare generated texts with the actual sources 
-to help to identify identical (memorized) parts of a given length.
 
 Mostly copy-paste from https://github.com/domschl/torch-poet
 """
@@ -86,78 +84,6 @@ class TextLibrary(object):
                 self.i2c[ind] = c
                 ind += 1
         self.ptr = 0
-
-    def display_colored_html(self, textlist, dark_mode=False, display_ref_anchor=True, pre='', post=''):
-        bgcolorsWht = ['#d4e6e1', '#d8daef', '#ebdef0', '#eadbd8', '#e2d7d5', '#edebd0',
-                       '#ecf3cf', '#d4efdf', '#d0ece7', '#d6eaf8', '#d4e6f1', '#d6dbdf',
-                       '#f6ddcc', '#fae5d3', '#fdebd0', '#e5e8e8', '#eaeded', '#A9CCE3']
-        bgcolorsDrk = ['#342621', '#483a2f', '#3b4e20', '#2a3b48', '#324745', '#3d3b30',
-                       '#3c235f', '#443f4f', '#403c37', '#463a28', '#443621', '#364b5f',
-                       '#264d4c', '#2a3553', '#3d2b40', '#354838', '#3a3d4d', '#594C23']
-        if dark_mode is False:
-            bgcolors = bgcolorsWht
-        else:
-            bgcolors = bgcolorsDrk
-        out = ''
-        for txt, ind in textlist:
-            txt = txt.replace('\n', '<br>')
-            if ind == 0:
-                out += txt
-            else:
-                if display_ref_anchor is True:
-                    anchor = "<sup>[" + str(ind) + "]</sup>"
-                else:
-                    anchor = ""
-                out += "<span style=\"background-color:"+bgcolors[ind % 16]+";\">" + \
-                       txt + "</span>" + anchor
-        # display(HTML(pre+out+post))
-
-    def source_highlight(self, txt, minQuoteSize=10, dark_mode=False, display_ref_anchor=True):
-        tx = txt
-        out = []
-        qts = []
-        txsrc = [("Sources: ", 0)]
-        sc = False
-        noquote = ''
-        while len(tx) > 0:  # search all library files for quote 'txt'
-            mxQ = 0
-            mxI = 0
-            mxN = ''
-            found = False
-            for f in self.files:  # find longest quote in all texts
-                p = minQuoteSize
-                if p <= len(tx) and tx[:p] in f["data"]:
-                    p = minQuoteSize + 1
-                    while p <= len(tx) and tx[:p] in f["data"]:
-                        p += 1
-                    if p-1 > mxQ:
-                        mxQ = p-1
-                        mxI = f["index"]
-                        mxN = f"{f['author']}: {f['title']}"
-                        found = True
-            if found:  # save longest quote for colorizing
-                if len(noquote) > 0:
-                    out.append((noquote, 0))
-                    noquote = ''
-                out.append((tx[:mxQ], mxI))
-                tx = tx[mxQ:]
-                if mxI not in qts:  # create a new reference, if first occurence
-                    qts.append(mxI)
-                    if sc:
-                        txsrc.append((", ", 0))
-                    sc = True
-                    txsrc.append((mxN, mxI))
-            else:
-                noquote += tx[0]
-                tx = tx[1:]
-        if len(noquote) > 0:
-            out.append((noquote, 0))
-            noquote = ''
-        self.display_colored_html(
-            out, dark_mode=dark_mode, display_ref_anchor=display_ref_anchor)
-        if len(qts) > 0:  # print references, if there is at least one source
-            self.display_colored_html(txsrc, dark_mode=dark_mode, display_ref_anchor=display_ref_anchor, pre="<small><p style=\"text-align:right;\">",
-                                      post="</p></small>")
 
     def get_slice(self, length):
         if (self.ptr + length >= len(self.data)):

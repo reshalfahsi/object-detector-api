@@ -106,6 +106,9 @@ def train(epoch, path):
     cuda = model.get_network_parameters('is_cuda')
     device = model.get_network_parameters('device')
 
+    c2i_encoding = model.get_network_parameters('c2i_encoding')
+    i2c_encoding = model.get_network_parameters('i2c_encoding')
+
     input_size = model.get_network('input_size')
     mask = model.generate_square_subsequent_mask(batch_size).to(device)
     total_loss = 0.
@@ -161,6 +164,6 @@ def train(epoch, path):
     if val_loss < best_loss:
         best_loss = val_loss
         model.set_network_parameters('best_loss', best_loss)
-        save_checkpoint({'epoch': start_epoch + epoch + 1, 'state_dict': model.state_dict(),
+        save_checkpoint({'c2i_encoding': c2i_encoding, 'c2i_encoding': i2c_encoding, 'epoch': start_epoch + epoch + 1, 'state_dict': model.state_dict(),
                          'optimizer_state_dict': model.get_network_parameters('optimizer').state_dict(), 'best_loss': best_loss}, path)
     return val_loss
