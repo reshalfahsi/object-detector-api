@@ -22,8 +22,8 @@ class TextLibrary(object):
         self.data = ''
         self.cache_dir = text_data_cache_directory
         self.files = []
-        self.c2i = {}
-        self.i2c = {}
+        self.c2i = {} # char to integer
+        self.i2c = {} # integer to char
         index = 1
         dat = None
         for descriptor, author, title in descriptors:
@@ -235,5 +235,10 @@ class TextLibrary(object):
         X, y = self.get_random_sample_batch(batch_size, length)
         return self.one_hot(X, len(self.i2c)), y
 
-def build(args):
-    return None
+def build(args:dict) -> TextLibrary:
+    gbl = GutenbergLib()
+    gbl.load_index()
+    book_list = gbl.search(args['book_list'])
+    libdesc = create_libdesc(gbl, args['project_name'], args['project_description'], book_list=book_list)
+    textlib = TextLibrary(libdesc["lib"], text_data_cache_directory=CACHE_DIR)
+    return textlib

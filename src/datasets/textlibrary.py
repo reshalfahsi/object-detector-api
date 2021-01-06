@@ -5,10 +5,11 @@ Mostly copy-paste from https://github.com/domschl/torch-poet
 """
 
 import torch
+from ..utils import TextLibrary
 
 
 class TextLibraryDataset(torch.utils.data.Dataset):
-    def __init__(self, textlib, sample_length, device, text_quanta=10):
+    def __init__(self, textlib: TextLibrary, sample_length: int, device: str, text_quanta: int = 10) -> None:
         self.textlib = textlib
         self.device = device
         self.vocab_size = len(textlib.i2c)

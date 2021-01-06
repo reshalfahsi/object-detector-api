@@ -13,11 +13,12 @@ import logging
 from enum import Enum
 from urllib.request import urlopen
 
+CACHE_DIR = "~/.cache/gutenberg"
 
 class GutenbergLib(object):
     """ A fuzzy, lightweight library to access, search and filter Project Gutenberg resources """
 
-    def __init__(self, root_url="http://www.mirrorservice.org/sites/ftp.ibiblio.org/pub/docs/books/gutenberg", cache_dir="~/.cache/gutenberg"):
+    def __init__(self, root_url="http://www.mirrorservice.org/sites/ftp.ibiblio.org/pub/docs/books/gutenberg", cache_dir=CACHE_DIR):
         """ GutenbergLib by default uses a mirror's root URL
 
         root_url -- url of Project Gutenberg or any mirror URL.
@@ -283,7 +284,7 @@ class GutenbergLib(object):
         lines = raw_index.split('\n')
         self.records = self._parse_index(lines)
 
-    def load_book(self, ebook_id):
+    def load_book(self, ebook_id : str) -> str:
         """ get text of an ebook from Gutenberg by ebook_id 
 
         ebook_id -- Gutenberg id
@@ -334,7 +335,7 @@ class GutenbergLib(object):
                 self.log.error(f"Failed to cache file {cache_file}")
         return data
 
-    def filter_text(self, book_text):
+    def filter_text(self, book_text : str) -> str:
         """ Heuristically remove header and trailer texts not part of the actual book 
         """
         start_tokens = ["*** START OF THIS PROJECT", "E-text prepared by",
@@ -421,7 +422,7 @@ class GutenbergLib(object):
                 frecs += [rec]
         return frecs
 
-    def search(self, search_dict):
+    def search(self, search_dict : dict) -> list :
         """ Search for book record with key specific key values
         For a list of valid keys, use `get_record_keys()`
         Standard keys are:
@@ -476,7 +477,7 @@ class GutenbergLib(object):
         return uv
 
 
-def get_cache_name(cache_path, author, title):
+def get_cache_name(cache_path : str, author : str, title : str) -> str:
     if cache_path is None:
         return None
     cname = f"{author} - {title}.txt"
@@ -486,7 +487,7 @@ def get_cache_name(cache_path, author, title):
     return cache_filepath
 
 
-def create_libdesc(project_name, description, cache_path, book_list):
+def create_libdesc(gbl: GutenbergLib, project_name: str, description: str, cache_path: str = CACHE_DIR, book_list: list = []) -> dict:
     libdesc = {"name": project_name, "description": description, "lib": []}
     if cache_path is None or not os.path.exists(cache_path):
         print(f"A valid cache {cache_path} is needed!")
