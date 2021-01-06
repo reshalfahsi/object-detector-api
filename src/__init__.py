@@ -6,5 +6,5 @@ from .dataset_adjustment import adjust_dataset
 from .utils import TextLibrary
 from .utils import GutenbergLib, create_libdesc
 
-__all__ = [PoemGenerator, TextLibraryDataset, adjust_dataset, TextLibrary]
+__all__ = [PoemGenerator, TextLibraryDataset, adjust_dataset]
 __version__ = '1.0.1'

@@ -62,7 +62,7 @@ class PoemGenerator(nn.Module):
         self.__network_parameters['train_dataset'] = None
         self.__network_parameters['train_loader'] = None
 
-        self.__network_parameters['input_size'] = input_size
+        self.__network_parameters['embedding_size'] = embedding_size
         self.pos_encoder = PositionalEncoding(embedding_size)
         encoder_layers = TransformerEncoderLayer(
             embedding_size, nheads, hidden_dim)
@@ -71,9 +71,12 @@ class PoemGenerator(nn.Module):
         self.encoder = nn.Embedding(input_size, embedding_size)
         self.decoder = nn.Linear(embedding_size, input_size)
 
-    def forward(self, x):
-
-        return None
+    def forward(self, src, src_mask):
+        src = self.encoder(src) * math.sqrt(self.__network_parameters['embedding_size'])
+        src = self.pos_encoder(src)
+        output = self.transformer_encoder(src, src_mask)
+        output = self.decoder(output)
+        return output
 
     def get_network_parameters(self, key=''):
         if key == '':

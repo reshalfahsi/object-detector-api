@@ -3,13 +3,13 @@ TextLibrary Dataset handler.
 
 Mostly copy-paste from https://github.com/domschl/torch-poet
 """
-
+from typing import Union
 import torch
 from ..utils import TextLibrary
 
 
 class TextLibraryDataset(torch.utils.data.Dataset):
-    def __init__(self, textlib: TextLibrary, sample_length: int, device: str, text_quanta: int = 10) -> None:
+    def __init__(self, textlib: TextLibrary, sample_length: int, device: Union[str, torch.device], text_quanta: int = 10) -> None:
         self.textlib = textlib
         self.device = device
         self.vocab_size = len(textlib.i2c)
