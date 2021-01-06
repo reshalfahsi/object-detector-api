@@ -1,3 +1,9 @@
+"""
+Deep Learning Model for Generating Poem.
+
+Mostly copy-paste from https://pytorch.org/tutorials/beginner/transformer_tutorial.html
+"""
+
 from typing import Any
 import math
 
@@ -32,9 +38,6 @@ class PositionalEncoding(nn.Module):
 
 
 class PoemGenerator(nn.Module):
-    """
-    Deep Learning Model for Generating Poem
-    """
 
     def __init__(self, input_size, embedding_size=200, nheads=8, hidden_dim=256, num_encoder_layers=6, num_decoder_layers=6):
         super(PoemGenerator, self).__init__()
@@ -45,9 +48,11 @@ class PoemGenerator(nn.Module):
         self.__network_parameters['device'] = torch.device(
             "cuda:0" if torch.cuda.is_available() else "cpu")
 
-        self.__network_parameters['learning_rate'] = 1e-3
-        self.__network_parameters['optimizer'] = torch.optim.Adam(
-            self.parameters(), lr=self.__network_parameters['learning_rate'], weight_decay=0.0)
+        self.__network_parameters['learning_rate'] = 5.0
+        self.__network_parameters['optimizer'] = torch.optim.SGD(
+            self.parameters(), lr=self.__network_parameters['learning_rate'])
+        self.__network_parameters['scheduler'] = torch.optim.lr_scheduler.StepLR(
+            self.__network_parameters['optimizer'], 1.0, gamma=0.95)
 
         self.__network_parameters['loss_function'] = nn.CrossEntropyLoss()
 
@@ -57,12 +62,22 @@ class PoemGenerator(nn.Module):
 
         self.__network_parameters['best_loss'] = 9.9999999999e9
         self.__network_parameters['start_epoch'] = 0
+
+        self.__network_parameters['num_epochs'] = 3
         self.__network_parameters['batch_size'] = 768
 
         self.__network_parameters['train_dataset'] = None
         self.__network_parameters['train_loader'] = None
 
+        self.__network_parameters['test_dataset'] = None
+        self.__network_parameters['test_loader'] = None
+
+        self.__network_parameters['epoch_now'] = 0
+        self.__network_parameters['loss_now'] = math.inf
+
         self.__network_parameters['embedding_size'] = embedding_size
+        self.__network_parameters['input_size'] = input_size
+
         self.pos_encoder = PositionalEncoding(embedding_size)
         encoder_layers = TransformerEncoderLayer(
             embedding_size, nheads, hidden_dim)
@@ -71,8 +86,15 @@ class PoemGenerator(nn.Module):
         self.encoder = nn.Embedding(input_size, embedding_size)
         self.decoder = nn.Linear(embedding_size, input_size)
 
+    def generate_square_subsequent_mask(self, sz):
+        mask = (torch.triu(torch.ones(sz, sz)) == 1).transpose(0, 1)
+        mask = mask.float().masked_fill(mask == 0, float(
+            '-inf')).masked_fill(mask == 1, float(0.0))
+        return mask
+
     def forward(self, src, src_mask):
-        src = self.encoder(src) * math.sqrt(self.__network_parameters['embedding_size'])
+        src = self.encoder(
+            src) * math.sqrt(self.__network_parameters['embedding_size'])
         src = self.pos_encoder(src)
         output = self.transformer_encoder(src, src_mask)
         output = self.decoder(output)
@@ -105,9 +127,16 @@ class PoemGenerator(nn.Module):
         if dataset is None:
             print("Please insert a valid dataset format.")
             return
+        
+        train_dataset = dataset
+        test_dataset = dataset
 
-        self.__network_parameters['train_dataset'] = dataset
+        self.__network_parameters['train_dataset'] = train_dataset
         self.__network_parameters['train_loader'] = torch.utils.data.DataLoader(
+            dataset=dataset, batch_size=self.__network_parameters['batch_size'], shuffle=True, num_workers=0)
+
+        self.__network_parameters['test_dataset'] = test_dataset
+        self.__network_parameters['test_loader'] = torch.utils.data.DataLoader(
             dataset=dataset, batch_size=self.__network_parameters['batch_size'], shuffle=True, num_workers=0)
 
         return None
@@ -125,5 +154,5 @@ class PoemGenerator(nn.Module):
         if path == '' and weight_path == '':
             print("Please Insert Path!")
             return None
-        
+
         return predict.predict(self, weight_path, path)
