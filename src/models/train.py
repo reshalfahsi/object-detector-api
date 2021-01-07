@@ -128,7 +128,7 @@ def train(epoch, path):
             mask = model.generate_square_subsequent_mask(
                 data.size(0)).to(device)
 
-        output = model(target, mask)
+        output = model(data, mask)
         loss = model.get_network_parameters('loss_function')(
             output.view(-1, input_size), target)
 

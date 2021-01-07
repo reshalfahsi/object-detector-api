@@ -28,8 +28,14 @@ def predict(_model_, weight_path, text):
         return None
 
     model.eval()
+
+    device = model.get_network_parameters('device')
+    mask =  model.generate_square_subsequent_mask(1).to(device)
+
     text = [checkpoint['c2i_encoding'][c] for c in text]
-    output = model.predict(text)
+    text = torch.LongTensor(text).to(device)
+    text = text.unsqueeze(0)
+    output = model(text, mask)
     output = output.cpu().detach().numpy()
     output = [checkpoint['i2c_encoding'][i] for i in output]
 

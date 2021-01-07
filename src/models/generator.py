@@ -13,6 +13,7 @@ from torch.nn import TransformerEncoder, TransformerEncoderLayer
 
 from . import train
 from . import predict
+from ..datasets import split_train_test
 
 
 class PositionalEncoding(nn.Module):
@@ -62,7 +63,7 @@ class PoemGenerator(nn.Module):
         self.__network_parameters['start_epoch'] = 0
 
         self.__network_parameters['num_epochs'] = 3
-        self.__network_parameters['batch_size'] = 768
+        self.__network_parameters['batch_size'] = 30
 
         self.__network_parameters['train_dataset'] = None
         self.__network_parameters['train_loader'] = None
@@ -77,6 +78,7 @@ class PoemGenerator(nn.Module):
         self.__network_parameters['input_size'] = input_size
 
         self.__network_parameters['c2i_encoding'] = {}
+        self.__network_parameters['i2c_encoding'] = {}
 
         self.pos_encoder = PositionalEncoding(embedding_size)
         encoder_layers = TransformerEncoderLayer(
@@ -126,20 +128,19 @@ class PoemGenerator(nn.Module):
 
         if dataset is None:
             print("Please insert a valid dataset format.")
-            return
-        
-        train_dataset = dataset
-        test_dataset = dataset
+            return None
+
+        train_dataset, test_dataset = split_train_test(dataset)
         
         self.__network_parameters['c2i_encoding'], self.__network_parameters['i2c_encoding'] = dataset.get_encoding()
 
         self.__network_parameters['train_dataset'] = train_dataset
         self.__network_parameters['train_loader'] = torch.utils.data.DataLoader(
-            dataset=dataset, batch_size=self.__network_parameters['batch_size'], shuffle=True, num_workers=0)
+            dataset=train_dataset, batch_size=self.__network_parameters['batch_size'], shuffle=True, num_workers=0)
 
         self.__network_parameters['test_dataset'] = test_dataset
         self.__network_parameters['test_loader'] = torch.utils.data.DataLoader(
-            dataset=dataset, batch_size=self.__network_parameters['batch_size'], shuffle=True, num_workers=0)
+            dataset=test_dataset, batch_size=self.__network_parameters['batch_size'], shuffle=True, num_workers=0)
 
         return None
 
@@ -154,7 +155,7 @@ class PoemGenerator(nn.Module):
     def predict(self, weight_path='', text=''):
 
         if text == '' and weight_path == '':
-            print("Please Insert Path!")
+            print("Please Insert Proper Path or Text!")
             return None
 
         return predict.predict(self, weight_path, text)
