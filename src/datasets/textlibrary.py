@@ -55,4 +55,4 @@ def split_train_test(dataset : TextLibraryDataset) -> tuple:
     train.set_data(data_train)
     test.set_data(data_test)
 
-    return train, test
+    return (train, test)
