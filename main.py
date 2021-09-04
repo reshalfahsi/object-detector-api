@@ -14,10 +14,12 @@
 
 import os
 import uvicorn
+import threading
 import translator as nmt
 
 
 def main():
+    thread = threading.Thread(target=nmt.load_model, args=())
     port = int(os.environ.get('PORT', nmt.DEFAULT_PORT))
     uvicorn.run(nmt.app, host=nmt.DEFAULT_HOST, port=port)
 

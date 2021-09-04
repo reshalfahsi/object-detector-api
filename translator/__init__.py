@@ -12,7 +12,7 @@
 # ==============================================================================
 
 
-from translator.api import app
+from translator.api import app, load_model
 from translator.utils import (
     DEFAULT_PORT,
     DEFAULT_HOST

@@ -25,6 +25,10 @@ app = FastAPI()
 nmt = Translator()
 
 
+def load_model():
+    nmt.load()
+
+
 """Sanity Check"""
 @app.get("/")
 def index():
