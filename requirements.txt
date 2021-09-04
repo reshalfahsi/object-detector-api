@@ -1,6 +1,7 @@
 fastapi
 uvicorn[standard]
 pytest
+numpy
 torch
 fastBPE
 regex
