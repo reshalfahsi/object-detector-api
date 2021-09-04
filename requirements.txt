@@ -8,3 +8,5 @@ regex
 requests
 sacremoses
 subword_nmt
+hydra-core
+omegaconf
