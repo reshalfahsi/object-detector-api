@@ -9,7 +9,7 @@ RUN \
   apt-get clean && \
   rm -rf /var/cache/apt/* && \
   rm -rf /var/lib/apt/lists/* && \
-  pip install pip --upgrade
+  pip install pip --upgrade && \
   pip install -r requirements.txt --no-cache-dir
 
 
