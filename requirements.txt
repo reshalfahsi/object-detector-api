@@ -10,3 +10,4 @@ sacremoses
 subword_nmt
 hydra-core
 omegaconf
+bitarray
