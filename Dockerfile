@@ -14,7 +14,7 @@ RUN \
   pip install -r requirements.txt --no-cache-dir
 
 
-COPY translator translator
+COPY detector detector
 COPY main.py .
 
 # EXPOSE 80
