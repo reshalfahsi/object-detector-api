@@ -6,6 +6,7 @@ COPY requirements.txt .
 
 RUN \
   apt-get update -q -y && \
+  apt-get install ffmpeg libsm6 libxext6 -y && \
   apt-get clean && \
   rm -rf /var/cache/apt/* && \
   rm -rf /var/lib/apt/lists/* && \

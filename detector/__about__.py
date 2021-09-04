@@ -12,11 +12,8 @@
 # ==============================================================================
 
 
-from translator.api import app, load_model
-from translator.utils import (
-    DEFAULT_PORT,
-    DEFAULT_HOST
-)
-
-from translator.__about__ import __version__
-
+__title__ = 'Object Detector'
+__version__ = '1.0.0'
+__description__ = 'Object Detector on Cloud with Deep Learning'
+__author__ = 'reshalfahsi'
+__copyright__ = 'Copyright (c) 2021 Resha Dwika Hefni Al-Fahsi. All rights reserved'

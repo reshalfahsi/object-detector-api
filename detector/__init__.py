@@ -12,13 +12,11 @@
 # ==============================================================================
 
 
-from pydantic import BaseModel
+from detector.api import app
+from detector.utils import (
+    DEFAULT_PORT,
+    DEFAULT_HOST
+)
 
-
-DEFAULT_PORT = 80
-DEFAULT_HOST = '0.0.0.0'
-
-
-class Text(BaseModel):
-    text: str
+from detector.__about__ import __version__
 

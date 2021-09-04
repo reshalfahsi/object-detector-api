@@ -11,37 +11,29 @@
 # SOFTWARE.
 # ==============================================================================
 
-import threading
 
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from starlette.responses import StreamingResponse
 from fastapi import FastAPI
 
-from translator.__about__ import __description__ as DESCRIPTION
-from translator.utils import Text
-from translator.model import Translator
+from detector.__about__ import __description__ as DESCRIPTION
+from detector.model import Detector
 
 
 app = FastAPI()
-nmt = Translator()
-
-
-def load_model():
-    nmt.load()
+detector = Detector()
 
 
 """Sanity Check"""
 @app.get("/")
 async def index():
-    thread = threading.Thread(target=load_model, args=())
     return DESCRIPTION
 
 
-@app.post("/translate")
-def translate(text: Text):
-    nmt.load()
-    result = nmt.translate(text.text)
-    return JSONResponse(result)
+@app.post("/predict")
+async def predict(file: UploadFile = File(...)):
+    result = detector.predict(file)
+    return StreamingResponse(result, media_type="image/png")
 
 
 app.add_middleware(CORSMiddleware,
