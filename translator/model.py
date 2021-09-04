@@ -17,6 +17,10 @@ import torch
 
 class Translator:
     def __init__(self):
+        self.model = None
+
+    def load(self):
+        if self.model is not None: return None
         self.model = torch.hub.load('pytorch/fairseq',
                                     'transformer.wmt19.en-de.single_model',
                                     tokenizer='moses',

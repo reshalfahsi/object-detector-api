@@ -11,3 +11,4 @@ subword_nmt
 hydra-core
 omegaconf
 bitarray
+Cython

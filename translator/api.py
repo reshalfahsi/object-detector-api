@@ -33,6 +33,7 @@ def index():
 
 @app.post("/translate")
 def translate(text: Text):
+    nmt.load()
     result = nmt.translate(text.text)
     return JSONResponse(result)
 
