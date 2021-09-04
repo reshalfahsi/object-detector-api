@@ -12,12 +12,14 @@
 # ==============================================================================
 
 
+import os
 import uvicorn
 import translator as nmt
 
 
 def main():
-    uvicorn.run(nmt.app, host=nmt.DEFAULT_HOST, port=nmt.DEFAULT_PORT)
+    port = int(os.environ.get('PORT', nmt.DEFAULT_PORT))
+    uvicorn.run(nmt.app, host=nmt.DEFAULT_HOST, port=port)
 
 
 if __name__ == '__main__':

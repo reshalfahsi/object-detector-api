@@ -16,6 +16,6 @@ RUN \
 COPY translator translator
 COPY main.py .
 
-EXPOSE 80
+# EXPOSE 80
 
 ENTRYPOINT ["python3", "main.py"]
