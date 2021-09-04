@@ -9,8 +9,8 @@ RUN \
   apt-get clean && \
   rm -rf /var/cache/apt/* && \
   rm -rf /var/lib/apt/lists/* && \
-  pip3 install pip --upgrade
-  pip3 install -r requirements.txt --no-cache-dir
+  pip install pip --upgrade
+  pip install -r requirements.txt --no-cache-dir
 
 
 COPY translator translator
