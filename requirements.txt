@@ -2,6 +2,7 @@ fastapi
 uvicorn[standard]
 numpy
 torch
+torchvision
 Pillow
 opencv-python
 
