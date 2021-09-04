@@ -14,21 +14,14 @@
 
 import os
 import uvicorn
-import threading
 import translator as nmt
-
-
-SERVER_STOP = False
 
 
 def main():
     port = int(os.environ.get('PORT', nmt.DEFAULT_PORT))
     uvicorn.run(nmt.app, host=nmt.DEFAULT_HOST, port=port)
-    SERVER_STOP = True
 
 
 if __name__ == '__main__':
-    model = threading.Thread(target=nmt.load_model, args=())
-    server = threading.Thread(target=main, args=())
-    while not SERVER_STOP: pass
+    main()
 

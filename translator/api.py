@@ -11,6 +11,7 @@
 # SOFTWARE.
 # ==============================================================================
 
+import threading
 
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -31,7 +32,8 @@ def load_model():
 
 """Sanity Check"""
 @app.get("/")
-def index():
+async def index():
+    thread = threading.Thread(target=load_model, args=())
     return DESCRIPTION
 
 
