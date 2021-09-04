@@ -14,7 +14,11 @@
 
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import StreamingResponse
-from fastapi import FastAPI
+from fastapi import (
+    FastAPI,
+    UploadFile,
+    File
+)
 
 from detector.__about__ import __description__ as DESCRIPTION
 from detector.model import Detector
