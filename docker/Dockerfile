@@ -2,7 +2,7 @@ FROM python:3.8.10
 
 WORKDIR /src
 
-COPY requirements.txt .
+COPY ../requirements.txt .
 
 RUN \
   apt-get update -q -y && \
@@ -12,8 +12,8 @@ RUN \
   pip install -r requirements.txt --no-cache-dir
 
 
-COPY translator translator
-COPY main.py .
+COPY ../translator translator
+COPY ../main.py .
 
 EXPOSE 8080
 
