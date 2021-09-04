@@ -1,5 +1,1 @@
-# Poem Generator
-
-# Dependencies
-
-# Run
+# English to German Translator

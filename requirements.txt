@@ -1,2 +1,9 @@
+fastapi
+uvicorn[standard]
+pytest
 torch
-numpy
+fastBPE
+regex
+requests
+sacremoses
+subword_nmt
