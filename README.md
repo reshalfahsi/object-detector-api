@@ -1,6 +1,6 @@
 # Object Detector API
 
-Minimal implementation of object detection API hosted on [Heroku](https://heroku.com/).
+Minimal implementation of object detection API hosted on [Heroku](https://wpir-dnjf-8439.herokuapp.com/).
 
 ## Deployment
 
