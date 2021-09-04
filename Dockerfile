@@ -1,4 +1,4 @@
-FROM python:3.8.10
+FROM python:3.9
 
 WORKDIR /src
 
@@ -16,6 +16,6 @@ RUN \
 COPY translator translator
 COPY main.py .
 
-EXPOSE 8080
+EXPOSE 80
 
 ENTRYPOINT ["python3", "main.py"]
