@@ -15,3 +15,5 @@ __pycache__
 
 # Compiled Documentation
 docs/_build
+
+.env
