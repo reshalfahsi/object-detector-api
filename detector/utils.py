@@ -63,7 +63,7 @@ def postprocessing(image, prediction):
             start_point = (int(boxes[0]), int(boxes[1]))
             pos_txt = (int(boxes[0] + 10), int(boxes[1] + 40))
             end_point = (int(boxes[2]), int(boxes[3]))
-            color = tuple(np.random.choice(range(256), size=3))
+            color = tuple(int(c) for c in tuple(np.random.choice(range(256), size=3)))
             thickness = 2
             font = cv2.FONT_HERSHEY_SIMPLEX
             fontScale = 1
